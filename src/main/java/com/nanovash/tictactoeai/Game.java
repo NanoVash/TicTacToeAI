@@ -28,6 +28,7 @@ public class Game {
 				label.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 				label.setHorizontalAlignment(JLabel.CENTER);
 				label.setFont(new Font("Dudu Calligraphy", Font.PLAIN, 150));
+				label.setBackground(Color.WHITE);
 				tiles[x][y] = new Tile(label, new Location(x, y));
 				window.contentPane.add(label);
 			}
@@ -38,14 +39,12 @@ public class Game {
 
 	public void start() {
 		init();
-		/*List<Player> temp = new ArrayList<>();
-		temp.add(new Human(window, this));
-		temp.add(new AI(window, this));
-		p1 = temp.get(new Random().nextInt(2));
-		temp.remove(p1);
-		p2 = temp.get(0);*/
-		p1 = new Human(this, "X");
-		p2 = new AI(this, "O");
+		Player[] tmp = new Player[]{new Human(this, "-"), new AI(this, "-")};
+		int a = new Random().nextInt(2);
+		p1 = tmp[a];
+		p2 = tmp[1 - a];
+		p1.setSymbol("X");
+		p2.setSymbol("O");
 		Player won;
 		boolean tie = false;
 		while ((won = won()) == null) {
