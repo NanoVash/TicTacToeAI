@@ -3,8 +3,7 @@ package com.nanovash.tictactoeai;
 import com.nanovash.tictactoeai.players.*;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Random;
 
 public class Game {
@@ -16,6 +15,12 @@ public class Game {
 
 	public Game(UIWindow window) {
 		this.window = window;
+		start();
+	}
+
+	public void init() {
+		for(Component cmp : window.contentPane.getComponents())
+			window.contentPane.remove(cmp);
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
 				JLabel label = new JLabel();
@@ -27,6 +32,12 @@ public class Game {
 				window.contentPane.add(label);
 			}
 		}
+		window.contentPane.repaint();
+		window.contentPane.revalidate();
+	}
+
+	public void start() {
+		init();
 		/*List<Player> temp = new ArrayList<>();
 		temp.add(new Human(window, this));
 		temp.add(new AI(window, this));
@@ -43,6 +54,7 @@ public class Game {
 			findTile(p2.startTurn()).setOwner(p2);
 		}
 		JOptionPane.showMessageDialog(window, tie ? "Tie" : won);
+		start();
 	}
 
 	private boolean isTie() {

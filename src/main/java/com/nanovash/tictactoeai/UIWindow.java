@@ -17,3 +17,4 @@ public class UIWindow extends JFrame {
 		setBounds(200, 200, 600, 600);
 	}
 }
+

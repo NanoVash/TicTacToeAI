@@ -41,6 +41,7 @@ public class Human extends Player {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		isTurn = false;
 		return clicked;
 	}
 }
