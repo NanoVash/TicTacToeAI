@@ -52,7 +52,7 @@ public class Game {
 			if ((won = won()) != null || (tie = isTie())) break;
 			findTile(p2.startTurn()).setOwner(p2);
 		}
-		JOptionPane.showMessageDialog(window, tie ? "Tie" : won);
+		JOptionPane.showMessageDialog(window, new JLabel(tie ? "Tie" : won + " won.", JLabel.CENTER), "Game over!", JOptionPane.PLAIN_MESSAGE);
 		start();
 	}
 
