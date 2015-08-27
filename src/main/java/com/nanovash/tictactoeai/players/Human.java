@@ -11,8 +11,8 @@ public class Human extends Player {
 	Location clicked;
 	boolean isTurn;
 
-	public Human(Game game, String symbol) {
-		super(game, symbol);
+	public Human(Game game) {
+		super(game);
 		for(Tile[] tiles: game.tiles) {
 			for(Tile t : tiles) {
 				t.getLabel().addMouseListener(new MouseAdapter() {

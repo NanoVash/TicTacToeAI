@@ -39,7 +39,7 @@ public class Game {
 
 	public void start() {
 		init();
-		Player[] tmp = new Player[]{new Human(this, "-"), new AI(this, "-")};
+		Player[] tmp = new Player[]{new Human(this), new AI(this)};
 		int a = new Random().nextInt(2);
 		p1 = tmp[a];
 		p2 = tmp[1 - a];

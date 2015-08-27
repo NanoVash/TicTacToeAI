@@ -6,8 +6,8 @@ import java.util.Random;
 
 public class AI extends Player {
 
-	public AI(Game game, String symbol) {
-		super(game, symbol);
+	public AI(Game game) {
+		super(game);
 	}
 
 	@Override
