@@ -1,22 +1,20 @@
 package com.nanovash.tictactoeai;
 
 import com.nanovash.tictactoeai.players.*;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
+@RequiredArgsConstructor
 public class Game {
 
-	public UIWindow window;
+	public @NonNull UIWindow window;
 	public Tile[][] tiles = new Tile[3][3];
 	public Player p1;
 	public Player p2;
-
-	public Game(UIWindow window) {
-		this.window = window;
-		start();
-	}
 
 	public void init() {
 		for(Component cmp : window.contentPane.getComponents())
@@ -38,7 +36,6 @@ public class Game {
 	}
 
 	public void start() {
-		init();
 		Player[] tmp = new Player[]{new Human(this), new AI(this)};
 		int a = new Random().nextInt(2);
 		p1 = tmp[a];
@@ -53,7 +50,6 @@ public class Game {
 			findTile(p2.startTurn()).setOwner(p2);
 		}
 		JOptionPane.showMessageDialog(window, new JLabel(tie ? "Tie" : won + " won.", JLabel.CENTER), "Game over!", JOptionPane.PLAIN_MESSAGE);
-		start();
 	}
 
 	private boolean isTie() {
