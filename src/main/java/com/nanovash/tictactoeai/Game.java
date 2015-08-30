@@ -1,8 +1,9 @@
 package com.nanovash.tictactoeai;
 
-import com.nanovash.tictactoeai.players.*;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,14 +12,13 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class Game {
 
-	public @NonNull UIWindow window;
+	private @NonNull @Getter UIWindow window;
+	private @Setter Player[] players;
 	public Tile[][] tiles = new Tile[3][3];
 	public Player p1;
 	public Player p2;
 
 	public void init() {
-		for(Component cmp : window.contentPane.getComponents())
-			window.contentPane.remove(cmp);
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
 				JLabel label = new JLabel();
@@ -36,12 +36,13 @@ public class Game {
 	}
 
 	public void start() {
-		Player[] tmp = new Player[]{new Human(this), new AI(this)};
-		int a = new Random().nextInt(2);
-		p1 = tmp[a];
-		p2 = tmp[1 - a];
+		int r = new Random().nextInt(2);
+		p1 = players[r];
+		p2 = players[1 - r];
 		p1.setSymbol("X");
 		p2.setSymbol("O");
+		p1.setName(p1.getCustomName());
+		p2.setName(p2.getCustomName());
 		Player won;
 		boolean tie = false;
 		while ((won = won()) == null) {
@@ -49,7 +50,15 @@ public class Game {
 			if ((won = won()) != null || (tie = isTie())) break;
 			findTile(p2.startTurn()).setOwner(p2);
 		}
-		JOptionPane.showMessageDialog(window, new JLabel(tie ? "Tie" : won + " won.", JLabel.CENTER), "Game over!", JOptionPane.PLAIN_MESSAGE);
+		JOptionPane.showMessageDialog(window, new JLabel(tie ? "Tie" : won.getName() + " won.", JLabel.CENTER), "Game over!", JOptionPane.PLAIN_MESSAGE);
+	}
+
+	public void clear() {
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				tiles[x][y].setOwner(null);
+			}
+		}
 	}
 
 	private boolean isTie() {

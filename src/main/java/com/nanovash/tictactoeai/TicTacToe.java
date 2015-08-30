@@ -1,5 +1,8 @@
 package com.nanovash.tictactoeai;
 
+import com.nanovash.tictactoeai.players.AI;
+import com.nanovash.tictactoeai.players.Human;
+
 import javax.swing.SwingUtilities;
 import java.lang.reflect.InvocationTargetException;
 
@@ -13,9 +16,11 @@ public class TicTacToe {
 			window.setVisible(true);
 		});
 		Game game = new Game(window);
+		game.init();
+		game.setPlayers(new Player[]{new Human(game), new AI(game)});
 		while(true) {
-			game.init();
 			game.start();
+			game.clear();
 		}
 	}
 }

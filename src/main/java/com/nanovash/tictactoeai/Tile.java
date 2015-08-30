@@ -11,16 +11,14 @@ public class Tile {
 	@NonNull @Getter @Setter JLabel label;
 	@NonNull @Getter @Setter Location location;
 
-	@Getter private Player owner;
+	private @Getter Player owner;
 
 	public String getText() {
 		return label.getText();
 	}
 
 	public void setOwner(Player p) {
-		label.setText(p.getSymbol());
-		for(MouseListener ml : label.getMouseListeners())
-			label.removeMouseListener(ml);
+		label.setText(p == null ? "" : p.getSymbol());
 		this.owner = p;
 	}
 }

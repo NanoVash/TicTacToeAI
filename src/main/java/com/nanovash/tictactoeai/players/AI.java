@@ -15,4 +15,9 @@ public class AI extends Player {
 		Random r = new Random();
 		return new Location(r.nextInt(3), r.nextInt(3));
 	}
+
+	@Override
+	public String getCustomName() {
+		return "AI";
+	}
 }
