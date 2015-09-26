@@ -6,10 +6,12 @@ import lombok.*;
 public abstract class Player {
 
 	private @NonNull @Getter Game game;
-	private @Getter @Setter String symbol;
+	private @Getter @Setter char symbol;
 	private @Getter @Setter String name;
 
 	public abstract Location startTurn();
 
-	public abstract String getCustomName();
+	public abstract void setName();
+
+	public abstract void endGame();
 }

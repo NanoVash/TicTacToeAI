@@ -8,16 +8,16 @@ import java.awt.event.MouseEvent;
 
 public class Human extends Player {
 
-	final Human human = this;
-	Location clicked;
-	boolean isTurn;
+	private final Human human = this;
+	private Location clicked;
+	private boolean isTurn;
 
 	private static int playerNum = 1;
 
 	public Human(Game game) {
 		super(game);
-		for(Tile[] tiles: game.tiles) {
-			for(Tile t : tiles) {
+		for (Tile[] tiles : getGame().getTiles()) {
+			for (Tile t : tiles) {
 				t.getLabel().addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
@@ -27,7 +27,7 @@ public class Human extends Player {
 								human.notify();
 							}
 						}
-						System.out.println("clicked");
+						System.out.println("clicked " + t.getLocation());
 					}
 				});
 			}
@@ -49,16 +49,15 @@ public class Human extends Player {
 	}
 
 	@Override
-	public String getCustomName() {
+	public void setName() {
 		String name;
 		do {
 			name = getName() == null ? JOptionPane.showInputDialog(getGame().getWindow(), "Input your name, Player " + playerNum + ".", "Choose a name.", JOptionPane.PLAIN_MESSAGE) : getName();
-		} while(name == null || name.trim().equals(""));
+		} while (name == null || name.trim().equals(""));
+		setName(name);
 		playerNum++;
-		return name;
 	}
 
-	public static void reset() {
-		playerNum = 1;
-	}
+	@Override
+	public void endGame() {}
 }
