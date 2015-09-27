@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AIManager {
@@ -26,7 +27,12 @@ public class AIManager {
 		for(File ai : f.listFiles()) {
 			if(ai.isDirectory()) continue;
 			try {
-				ais.add(new AI(game, ai.getName().replaceFirst("[.][^.]+$", ""), Files.readAllLines(ai.toPath())));
+				HashMap<String, Integer> allLines= new HashMap<>();
+				for(String l : Files.readAllLines(ai.toPath())) {
+					String[] split = l.split("\\|");
+					allLines.put(split[0], Integer.parseInt(split[1]));
+				}
+				ais.add(new AI(game, ai.getName().replaceFirst("[.][^.]+$", ""), allLines));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -51,8 +57,8 @@ public class AIManager {
 	public void save(AI ai) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(f, ai.getName() + ".ai")));
-			for(String s : ai.getGames())
-				writer.write(s + "\r\n");
+			for(String s : ai.getGames().keySet())
+				writer.write(s + "|" + ai.getGames().get(s) +"\r\n");
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
