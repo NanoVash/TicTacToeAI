@@ -11,6 +11,7 @@ import java.util.*;
 public class AI extends Player {
 
 	private @Getter HashMap<String, Integer> games;
+	private String fg;
 
 	public AI(Game game, String name, HashMap<String, Integer> games) {
 		super(game);
@@ -20,6 +21,7 @@ public class AI extends Player {
 
 	@Override
 	public Location startTurn() {
+		fg = null;
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
@@ -30,12 +32,15 @@ public class AI extends Player {
 		List<Integer> chance = new ArrayList<>();
 		for(String g : games.keySet())
 			if(((g.length() % 4 != 0) == (getSymbol() == Game.PLAYER_1_CHAR)) && g.startsWith(game)) {
-				System.out.println(g.substring(game.length(), game.length() + 2));
-				el.add(g.substring(game.length(), game.length() + 2));
+				System.out.println(g);
+				el.add(g);
 				chance.add(games.get(g));
 			}
-		if(!el.isEmpty())
-			return Location.fromString(chooseWithChance(el, chance));
+		if(!el.isEmpty()) {
+			fg = chooseWithChance(el, chance);
+			System.out.println("set " + fg);
+			return Location.fromString(fg.substring(game.length(), game.length() + 2));
+		}
 		return markRandomly();
 	}
 
@@ -51,6 +56,9 @@ public class AI extends Player {
 
 	private String chooseWithChance(List<String> el, List<Integer> chance) {
 		if(el.size() != chance.size()) throw new IllegalArgumentException("el and chance have to be of the same length!");
+		long time = System.currentTimeMillis();
+		Collections.shuffle(el, new Random(time));
+		Collections.shuffle(chance, new Random(time));
 		long total = 0;
 		for(int i : chance) total += i;
 		System.out.println(total);
@@ -68,12 +76,19 @@ public class AI extends Player {
 	@Override
 	public void endGame() {
 		String game = getGame().toString();
-		System.out.println(game);
+		System.out.println(game + " game");
+		System.out.println(fg + " fg");
 		if(getGame().isTie()) return;
-		if(games.keySet().contains(game))
-			games.put(game, games.get(game) + (((game.length() % 4 != 0) == (getSymbol() == Game.PLAYER_1_CHAR)) ? 1 : 0));
+		if(games.keySet().contains(fg) && fg != null) {
+			add(fg);
+			add(game);
+		}
 		else
 			games.put(game, 1);
+	}
+
+	private void add(String s) {
+		games.put(s, (games.containsKey(s) ? games.get(s) : 1) + (((s.length() % 4 != 0) == (getSymbol() == Game.PLAYER_1_CHAR)) ? (games.containsKey(s) ? 1 : 0): 0));
 	}
 
 	@Override
