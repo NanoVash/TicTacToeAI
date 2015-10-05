@@ -59,5 +59,8 @@ public class Human extends Player {
 	}
 
 	@Override
+	public void startGame() {}
+
+	@Override
 	public void endGame() {}
 }

@@ -13,5 +13,7 @@ public abstract class Player {
 
 	public abstract void setName();
 
+	public abstract void startGame();
+
 	public abstract void endGame();
 }

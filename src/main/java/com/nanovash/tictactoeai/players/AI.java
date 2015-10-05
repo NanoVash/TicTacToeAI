@@ -21,7 +21,6 @@ public class AI extends Player {
 
 	@Override
 	public Location startTurn() {
-		fg = null;
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
@@ -71,6 +70,11 @@ public class AI extends Player {
 			if(random < pChance[i])
 				return el.get(i);
 		return el.get(getGame().getRandom().nextInt(el.size()));
+	}
+
+	@Override
+	public void startGame() {
+		fg = null;
 	}
 
 	@Override

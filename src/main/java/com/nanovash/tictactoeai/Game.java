@@ -46,6 +46,8 @@ public class Game {
 		p2.setSymbol(PLAYER_2_CHAR);
 		p1.setName();
 		p2.setName();
+		p1.startGame();
+		p2.startGame();
 		Player won;
 		boolean tie = false;
 		while ((won = won()) == null) {
