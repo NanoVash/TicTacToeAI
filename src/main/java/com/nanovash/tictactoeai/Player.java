@@ -1,19 +1,35 @@
 package com.nanovash.tictactoeai;
 
-import lombok.*;
+import com.nanovash.tictactoeai.util.Location;
+import lombok.Getter;
+import lombok.Setter;
 
-@RequiredArgsConstructor
 public abstract class Player {
 
-	private @NonNull @Getter Game game;
-	private @Getter @Setter char symbol;
 	private @Getter @Setter String name;
 
-	public abstract Location startTurn();
+    /**
+     * Called when the player's turn starts
+     * @param game The game
+     * @return Where the player chose to mark
+     */
+	public abstract Location startTurn(Game game);
 
-	public abstract void setName();
+    /**
+     * Called when the Player should be prompted to input a name
+     * @param game The game
+     */
+	public abstract void changeName(Game game);
 
-	public abstract void startGame();
+    /**
+     * Called when the game starts
+     * @param game The game
+     */
+	public abstract void startGame(Game game);
 
-	public abstract void endGame();
+    /**
+     * Called when the game ends
+     * @param game The game
+     */
+	public abstract void endGame(Game game);
 }

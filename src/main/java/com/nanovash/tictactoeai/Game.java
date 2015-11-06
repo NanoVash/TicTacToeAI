@@ -1,5 +1,9 @@
 package com.nanovash.tictactoeai;
 
+import com.nanovash.tictactoeai.util.Location;
+import com.nanovash.tictactoeai.util.Tile;
+import com.nanovash.tictactoeai.windows.GameWindow;
+import com.nanovash.tictactoeai.windows.UIWindow;
 import lombok.*;
 
 import javax.swing.*;
@@ -9,17 +13,19 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class Game {
 
-	private @NonNull @Getter UIWindow window;
+	private @NonNull @Getter GameWindow window;
 	private @Setter Player[] players;
 	private @Getter Tile[][] tiles = new Tile[3][3];
 	private @Getter Random random = new Random();
-	private Player p1;
-	private Player p2;
+	private @Getter Player p1;
+	private @Getter Player p2;
 	private int order = -1;
+    private @Getter @Setter boolean done = false;
 
 	public static final char PLAYER_1_CHAR = 'X';
 	public static final char PLAYER_2_CHAR = 'O';
 
+    //Initializes the game
 	public void init() {
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
@@ -27,14 +33,14 @@ public class Game {
 				label.setOpaque(true);
 				label.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 				label.setHorizontalAlignment(JLabel.CENTER);
-				label.setFont(new Font("Dudu Calligraphy", Font.PLAIN, 150));
+				label.setFont(UIWindow.createFont(label, 150));
 				label.setBackground(Color.WHITE);
 				tiles[x][y] = new Tile(label, new Location(x, y));
-				window.contentPane.add(label);
+				window.getContentPane().add(label);
 			}
 		}
-		window.contentPane.repaint();
-		window.contentPane.revalidate();
+		window.getContentPane().repaint();
+		window.getContentPane().revalidate();
 	}
 
 	public void start() {
@@ -42,28 +48,26 @@ public class Game {
 		int r = getRandom().nextInt(2);
 		p1 = players[r];
 		p2 = players[1 - r];
-		p1.setSymbol(PLAYER_1_CHAR);
-		p2.setSymbol(PLAYER_2_CHAR);
-		p1.setName();
-		p2.setName();
-		p1.startGame();
-		p2.startGame();
+		p1.changeName(this);
+		p2.changeName(this);
+		p1.startGame(this);
+		p2.startGame(this);
 		Player won;
 		boolean tie = false;
 		while ((won = won()) == null) {
-			findTileByLocation(p1.startTurn()).setOwner(p1, ++order);
+			findTile(p1.startTurn(this)).setOwner(p1, ++order, PLAYER_1_CHAR);
 			if ((won = won()) != null || (tie = isTie())) break;
-			findTileByLocation(p2.startTurn()).setOwner(p2, ++order);
+			findTile(p2.startTurn(this)).setOwner(p2, ++order, PLAYER_2_CHAR);
 		}
-		p1.endGame();
-		p2.endGame();
-		JOptionPane.showMessageDialog(window, new JLabel(tie ? "Tie" : won.getName() + " won.", JLabel.CENTER), "Game over!", JOptionPane.PLAIN_MESSAGE);
+		p1.endGame(this);
+		p2.endGame(this);
+		JOptionPane.showMessageDialog(null, new JLabel(tie ? "Tie" : won.getName() + " won.", JLabel.CENTER), "Game over!", JOptionPane.PLAIN_MESSAGE);
 	}
 
 	public void clear() {
 		for (int x = 0; x < 3; x++)
 			for (int y = 0; y < 3; y++)
-				tiles[x][y].setOwner(null, -1);
+				tiles[x][y].setOwner(null, -1, ' ');
 	}
 
 	public boolean isTie() {
@@ -74,7 +78,7 @@ public class Game {
 		return !tie;
 	}
 
-	public Tile findTileByLocation(Location l) {
+	public Tile findTile(Location l) {
 		for (int x = 0; x < 3; x++)
 			for (int y = 0; y < 3; y++)
 				if (tiles[x][y].getLocation().equals(l))
@@ -82,7 +86,7 @@ public class Game {
 		return null;
 	}
 
-	public Location findLocationByOrder(int i) {
+	public Location findLocation(int i) {
 		for (int x = 0; x < 3; x++)
 			for (int y = 0; y < 3; y++)
 				if(tiles[x][y].getOrder() == i)
@@ -90,20 +94,21 @@ public class Game {
 		return null;
 	}
 
+    //Checks if a player won and if one did it returns it
 	private Player won() {
 		for (int x = 0; x < 3; x++) {
-			Player p = tiles[x][1].getOwner();
+			String p = tiles[x][1].getText();
 			if (p == null) continue;
-			if (tiles[x][0].getOwner() == p && tiles[x][2].getOwner() == p)
-				return p;
+			if (tiles[x][0].getText().equals(p) && tiles[x][2].getText().equals(p))
+				return tiles[x][1].getOwner();
 			if (x == 1)
-				if ((tiles[0][0].getOwner() == p && tiles[2][2].getOwner() == p) || (tiles[0][2].getOwner() == p && tiles[2][0].getOwner() == p))
-					return p;
+				if ((tiles[0][0].getText().equals(p) && tiles[2][2].getText().equals(p)) || (tiles[0][2].getText().equals(p) && tiles[2][0].getText().equals(p)))
+					return tiles[x][1].getOwner();
 		}
 		for (int y = 0; y < 3; y++) {
-			Player p = tiles[1][y].getOwner();
-			if (p != null && tiles[0][y].getOwner() == p && tiles[2][y].getOwner() == p)
-				return p;
+			String p = tiles[1][y].getText();
+			if (p != null && tiles[0][y].getText().equals(p) && tiles[2][y].getText().equals(p))
+				return tiles[1][y].getOwner();
 		}
 		return null;
 	}
@@ -111,7 +116,7 @@ public class Game {
 	public String toString() {
 		StringBuilder game = new StringBuilder();
 		for(int i = 0; i <= order; i++) {
-			Location l = findLocationByOrder(i);
+			Location l = findLocation(i);
 			game.append(l.getX()).append(l.getY());
 		}
 		return game.toString();

@@ -1,6 +1,9 @@
 package com.nanovash.tictactoeai.players;
 
-import com.nanovash.tictactoeai.*;
+import com.nanovash.tictactoeai.Game;
+import com.nanovash.tictactoeai.util.Location;
+import com.nanovash.tictactoeai.Player;
+import com.nanovash.tictactoeai.util.Tile;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -15,8 +18,7 @@ public class Human extends Player {
 	private static int playerNum = 1;
 
 	public Human(Game game) {
-		super(game);
-		for (Tile[] tiles : getGame().getTiles()) {
+		for (Tile[] tiles : game.getTiles()) {
 			for (Tile t : tiles) {
 				t.getLabel().addMouseListener(new MouseAdapter() {
 					@Override
@@ -35,7 +37,7 @@ public class Human extends Player {
 	}
 
 	@Override
-	public Location startTurn() {
+	public Location startTurn(Game game) {
 		isTurn = true;
 		try {
 			synchronized (this) {
@@ -49,18 +51,20 @@ public class Human extends Player {
 	}
 
 	@Override
-	public void setName() {
+	public void changeName(Game game) {
 		String name;
 		do {
-			name = getName() == null ? JOptionPane.showInputDialog(getGame().getWindow(), "Input your name, Player " + playerNum + ".", "Choose a name.", JOptionPane.PLAIN_MESSAGE) : getName();
+			name = getName() == null ? JOptionPane.showInputDialog(game.getWindow(), "Input your name, Player " + playerNum + ".", "Choose a name", JOptionPane.PLAIN_MESSAGE) : getName();
 		} while (name == null || name.trim().equals(""));
 		setName(name);
 		playerNum++;
 	}
 
-	@Override
-	public void startGame() {}
+    @Override
+	public void startGame(Game game) {
+        playerNum = 1;
+    }
 
 	@Override
-	public void endGame() {}
+	public void endGame(Game game) {}
 }
