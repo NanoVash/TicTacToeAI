@@ -10,7 +10,7 @@ import javax.swing.*;
 public class HumanManager implements Manager {
 
     @Override
-    public JPanel getUIConfigureer() {
+    public JPanel getUIConfigureer(JPanel panel, JPanel other) {
         return null;
     }
 
@@ -18,7 +18,7 @@ public class HumanManager implements Manager {
     public void exit() {}
 
     @Override
-    public Player getChosen(Game game) {
+    public Player getChosen(Game game, JPanel panel) {
         return new Human(game);
     }
 

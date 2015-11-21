@@ -19,8 +19,8 @@ public class Dialog {
         JOptionPane.showMessageDialog(c, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    public int showYesOrNo(Object message, String title) {
-        return JOptionPane.showConfirmDialog(c, message, title, JOptionPane.YES_NO_OPTION);
+    public boolean showYesOrNo(Object message, String title) {
+        return JOptionPane.showConfirmDialog(c, message, title, JOptionPane.YES_NO_OPTION) == 0;
     }
 
     public String showInput(Object message, String title) {

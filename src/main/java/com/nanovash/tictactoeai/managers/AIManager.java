@@ -16,14 +16,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 public class AIManager implements Manager {
 
 	private List<AI> AIs = new ArrayList<>();
-    private JComboBox<String> list;
-    private JCheckBox locked;
 	private File f = new File(System.getenv("APPDATA"), ".TicTacToeAI" + File.separator + "AIs");
     private Dialog dialog = new Dialog(TicTacToe.getWindow());
 
@@ -32,7 +31,7 @@ public class AIManager implements Manager {
             f.mkdirs();
         if(f.list().length == 0)
             try {
-                new File(f, "AI.ai").createNewFile();
+                new File(f, "AI#1.ai").createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -97,8 +96,28 @@ public class AIManager implements Manager {
         new File(f, name + ".ai").delete();
     }
 
+    private Component getComponent(JPanel panel, Class<?> klass) {
+        Component layoutComponent = ((BorderLayout) panel.getLayout()).getLayoutComponent(panel, BorderLayout.CENTER);
+        if(layoutComponent != null)
+            for (Component c : ((JPanel) layoutComponent).getComponents())
+                if(c.getClass().equals(klass))
+                    return c;
+        return null;
+    }
+
+    private boolean sort(JComboBox<String> box, String... selected) {
+        boolean tr = !box.getSelectedItem().toString().equals(selected.length == 0 ? "" : selected[0]);
+        List<String> list = new ArrayList<>();
+        ComboBoxModel<String> model = box.getModel();
+        for(int i = 0; i < model.getSize(); i++)
+            list.add(model.getElementAt(i));
+        Collections.sort(list);
+        box.setModel(new DefaultComboBoxModel<>(list.toArray(new String[list.size()])));
+        return tr;
+    }
+
     @Override
-    public JPanel getUIConfigureer() {
+    public JPanel getUIConfigureer(JPanel main, JPanel other) {
         JPanel data = new JPanel();
         data.setBackground(Color.WHITE);
         data.setLayout(new BoxLayout(data, BoxLayout.Y_AXIS));
@@ -118,45 +137,65 @@ public class AIManager implements Manager {
         editPanel.setBackground(Color.WHITE);
 
         String[] names = new String[AIs.size()];
-        for (int i = 0; i < AIs.size(); i++) {
+        for (int i = 0; i < AIs.size(); i++)
             names[i] = AIs.get(i).getName();
-        }
 
-        list = new JComboBox<>(names);
+        JComboBox<String> list = new JComboBox<>(names);
         list.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         ((JLabel) list.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         list.setFont(UIWindow.createFont(list, 18));
         list.setBackground(Color.WHITE);
         list.setFocusable(false);
         list.addActionListener(e -> {
-            Object name = list.getSelectedItem();
+            Object name = ((JComboBox) e.getSource()).getSelectedItem();
             if(name != null)
-                locked.setSelected(getAI(name.toString()).isLocked());
+                ((JCheckBox) getComponent(main, JCheckBox.class)).setSelected(getAI(name.toString()).isLocked());
         });
 
         JButton rename = new JButton("Rename");
         rename.addActionListener(e -> {
-            Object selected = list.getSelectedItem();
+            JComboBox<String> first = ((JComboBox) getComponent(main, JComboBox.class));
+            String selected = first.getSelectedItem().toString();
             String name = dialog.showInput("Choose a new name for \"" + selected + "\"", "Rename");
             if(name == null) return;
-            AI oldAI = getAI(selected.toString());
+            List<String> namez = new ArrayList<>();
+            for (AI ai : AIs)
+                namez.add(ai.getName());
+            if(namez.contains(name)) {
+                dialog.showMessage("You already have an AI called \"" + name + "\"", "Couldn't rename");
+                return;
+            }
+            AI oldAI = getAI(selected);
             AI newAI = createNewAI(name, oldAI.getGames());
             newAI.setLocked(oldAI.isLocked());
-            deleteAI(selected.toString());
-            list.addItem(name);
-            list.removeItem(selected);
-            list.setSelectedItem(name);
+            deleteAI(selected);
+            first.addItem(name);
+            first.removeItem(selected);
+            sort(first);
+            first.setSelectedItem(name);
+            JComboBox<String> second = ((JComboBox) getComponent(other, JComboBox.class));
+            if(second != null) {
+                second.addItem(name);
+                second.removeItem(selected);
+                if (sort(second, selected))
+                    second.setSelectedItem(name);
+            }
         });
 
         JButton delete = new JButton("Delete");
         delete.addActionListener(e -> {
-            String selected = list.getSelectedItem().toString();
-            if(dialog.showYesOrNo("Are you sure you wanna delete \"" + selected + "\"?", "Delete") == 0) {
+            JComboBox mainBox = ((JComboBox) getComponent(main, JComboBox.class));
+            JComboBox otherBox = (JComboBox) getComponent(other, JComboBox.class);
+            String selected = mainBox.getSelectedItem().toString();
+            if(dialog.showYesOrNo("Are you sure you wanna delete \"" + selected + "\"?", "Delete")) {
                 deleteAI(selected);
-                list.removeItem(selected);
+                ((JComboBox) getComponent(main, JComboBox.class)).removeItem(selected);
+                if(otherBox != null)
+                    otherBox.removeItem(selected);
             }
-            if (list.getItemCount() == 0) {
-                list.addItem(createNewAI("AI", new HashMap<>()).getName());
+            if (mainBox.getItemCount() == 0) {
+                for(JComboBox box : new JComboBox[] {mainBox, otherBox})
+                    box.addItem(createNewAI("AI#1", new HashMap<>()).getName());
                 dialog.showMessage("A new AI has been automatically created for you since you had no AIs", "New AI has been created");
             }
         });
@@ -182,7 +221,7 @@ public class AIManager implements Manager {
             b.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         }
 
-        locked = new JCheckBox("Locked");
+        JCheckBox locked = new JCheckBox("Locked");
         locked.setBackground(Color.WHITE);
         locked.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         locked.setFont(UIWindow.createFont(locked, 18));
@@ -190,7 +229,11 @@ public class AIManager implements Manager {
         locked.setSelected(getAI(list.getSelectedItem().toString()).isLocked());
         locked.setToolTipText("If an AI is locked it will be unable to learn");
         locked.addItemListener(e -> {
-            getAI(list.getSelectedItem().toString()).setLocked(locked.isSelected());
+            String name = ((JComboBox) getComponent(main, JComboBox.class)).getSelectedItem().toString();
+            getAI(name).setLocked(((JCheckBox) getComponent(main, JCheckBox.class)).isSelected());
+            JComboBox comboBox = ((JComboBox) getComponent(other, JComboBox.class));
+            if(comboBox != null && comboBox.getSelectedItem().toString().equals(name))
+                ((JCheckBox) getComponent(other, JCheckBox.class)).setSelected(getAI(name).isLocked());
         });
 
         JButton newAI = new JButton("Create new AI");
@@ -201,8 +244,13 @@ public class AIManager implements Manager {
             String name = dialog.showInput("Input a name for the new AI", "Create new AI");
             if(name == null) return;
             createNewAI(name, null);
-            list.addItem(name);
-            list.setSelectedItem(name);
+            JComboBox mainBox = ((JComboBox) getComponent(main, JComboBox.class));
+            JComboBox otherBox = ((JComboBox) getComponent(other, JComboBox.class));
+            for(JComboBox box : new JComboBox[] {mainBox, otherBox})
+                if(box != null) {
+                    box.addItem(name);
+                    box.setSelectedItem(name);
+                }
         });
 
         for (Component component : new Component[]{choose, list, configure, editPanel, locked, newAI})
@@ -222,8 +270,8 @@ public class AIManager implements Manager {
     }
 
     @Override
-    public Player getChosen(Game game) {
-        return getAI(list.getSelectedItem().toString());
+    public Player getChosen(Game game, JPanel panel) {
+        return getAI(((JComboBox) getComponent(panel, JComboBox.class)).getSelectedItem().toString());
     }
 
     @Override
