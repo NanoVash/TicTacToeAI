@@ -11,7 +11,7 @@ public interface Manager {
      * Gets the UIConfigureer of this manager's player
      * @return The {@link JPanel} to be displayed in the {@link UIWindow} when the player selects this manager's player
      */
-    JPanel getUIConfigureer(JPanel panel, JPanel other);
+    JPanel getUIConfigurator(JPanel panel, JPanel other);
 
     /**
      * Called when the {@link UIWindow} and each of the {@link GameWindow}s are closed

@@ -80,10 +80,10 @@ public class UIWindow extends JFrame {
         if(managers.length == 0)
             throw new RuntimeException("No player types were found!");
 
-        JPanel lc = managers[0].getUIConfigureer(left, right);
+        JPanel lc = managers[0].getUIConfigurator(left, right);
         addPanel(left, lc);
 
-        JPanel rc = managers[managers.length > 1 ? 1 : 0].getUIConfigureer(right, left);
+        JPanel rc = managers[managers.length > 1 ? 1 : 0].getUIConfigurator(right, left);
         addPanel(right, rc);
 
         contentPane.add(main, BorderLayout.CENTER);
@@ -107,7 +107,7 @@ public class UIWindow extends JFrame {
             } catch (IllegalAccessException | NoSuchFieldException e1) {
                 e1.printStackTrace();
             }
-            JPanel c = managers[((JComboBox<String>) e.getSource()).getSelectedIndex()].getUIConfigureer(isRight ? right : left, isRight ? left : right);
+            JPanel c = managers[((JComboBox<String>) e.getSource()).getSelectedIndex()].getUIConfigurator(isRight ? right : left, isRight ? left : right);
             Container parent = temp.getParent();
             Component layoutComponent = ((BorderLayout) parent.getLayout()).getLayoutComponent(BorderLayout.CENTER);
             if(layoutComponent != null)

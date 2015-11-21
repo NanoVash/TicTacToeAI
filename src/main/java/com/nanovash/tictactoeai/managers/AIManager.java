@@ -96,11 +96,11 @@ public class AIManager implements Manager {
         new File(f, name + ".ai").delete();
     }
 
-    private Component getComponent(JPanel panel, Class<?> klass) {
+    private Component getComponent(JPanel panel, Class<?> clazz) {
         Component layoutComponent = ((BorderLayout) panel.getLayout()).getLayoutComponent(panel, BorderLayout.CENTER);
         if(layoutComponent != null)
             for (Component c : ((JPanel) layoutComponent).getComponents())
-                if(c.getClass().equals(klass))
+                if(c.getClass().equals(clazz))
                     return c;
         return null;
     }
@@ -117,7 +117,7 @@ public class AIManager implements Manager {
     }
 
     @Override
-    public JPanel getUIConfigureer(JPanel main, JPanel other) {
+    public JPanel getUIConfigurator(JPanel main, JPanel other) {
         JPanel data = new JPanel();
         data.setBackground(Color.WHITE);
         data.setLayout(new BoxLayout(data, BoxLayout.Y_AXIS));
@@ -243,6 +243,13 @@ public class AIManager implements Manager {
         newAI.addActionListener(e -> {
             String name = dialog.showInput("Input a name for the new AI", "Create new AI");
             if(name == null) return;
+            List<String> namez = new ArrayList<>();
+            for (AI ai : AIs)
+                namez.add(ai.getName());
+            if(namez.contains(name)) {
+                dialog.showMessage("You already have an AI called \"" + name + "\"", "Couldn't create new AI");
+                return;
+            }
             createNewAI(name, null);
             JComboBox mainBox = ((JComboBox) getComponent(main, JComboBox.class));
             JComboBox otherBox = ((JComboBox) getComponent(other, JComboBox.class));

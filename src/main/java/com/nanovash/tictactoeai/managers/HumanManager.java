@@ -10,7 +10,7 @@ import javax.swing.*;
 public class HumanManager implements Manager {
 
     @Override
-    public JPanel getUIConfigureer(JPanel panel, JPanel other) {
+    public JPanel getUIConfigurator(JPanel panel, JPanel other) {
         return null;
     }
 
