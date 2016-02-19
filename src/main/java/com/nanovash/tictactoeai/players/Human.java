@@ -22,7 +22,7 @@ public class Human extends Player {
 			for (Tile t : tiles) {
 				t.getLabel().addMouseListener(new MouseAdapter() {
 					@Override
-					public void mouseClicked(MouseEvent e) {
+					public void mousePressed(MouseEvent e) {
 						if (isTurn && t.getOwner() == null) {
 							synchronized (human) {
 								clicked = t.getLocation();
